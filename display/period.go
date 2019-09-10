@@ -1,4 +1,4 @@
-package banner
+package display
 
 // period is the display period for a banner.
 // begin represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z.
@@ -8,13 +8,13 @@ package banner
 // in the IANA database rules. Therefor, when creating a period, it is not
 // recommended to convert a time with an UTC-offset other than `00:00` to a
 // timestamp.
-type period struct {
+type Period struct {
 	begin    int64 // seconds since unix epoch
 	duration int64 // seconds banner should be displayed
 }
 
 // active checks if the naive time in location is an instant in period.
-func (p period) active(location string) (bool, error) {
+func (p Period) Active(location string) (bool, error) {
 	n, err := naiveTime(location)
 	if err != nil {
 		return false, err
