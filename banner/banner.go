@@ -1,5 +1,9 @@
 package banner
 
+import (
+	"time"
+)
+
 // period is the display period for a banner.
 // begin represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z.
 // Values must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive
@@ -23,9 +27,44 @@ type banner struct {
 }
 
 // activeIn checks if a banner is currently active in the given location.
-// The check is performed by considering the
 func (b banner) activeIn(location string) (bool, error) {
-	// get time in location
-	// t,err:=timeIn(location)
-	return false, nil
+	t, err := timeIn(location)
+	if err != nil {
+		return false, err
+	}
+	return naive(t).in(b.period), nil
+}
+
+// naivetime represents an UTC-offset-naive time.
+type naivetime struct {
+	timestamp int64
+}
+
+// naive normalizes the given time by removing the UTC-offset.
+// Returns an Unix epoch timestamp representation.
+func naive(t time.Time) naivetime {
+	_, offset := t.Zone()
+	return naivetime{timestamp: t.Unix() + int64(offset)}
+}
+
+// in checks if naivetime is an instant in the given period.
+func (n naivetime) in(p period) bool {
+	return n.timestamp >= p.begin && n.timestamp < p.begin+p.duration
+}
+
+// timeIn loads the time in the provided location. If the provided location name
+// is "" or "UTC" it returns the current time in UTC. If the name is "Local" it
+// returns the local time. Otherwise, the name is looked up in the systems zone
+// information and is assumed to be a fully qualified name matching the IANA
+// Time Zone database format, e.g. "Asia/Tokyo".
+// NOTE: The location name is looked up in the directory or uncompressed zip
+// file named by the ZONEINFO environment variable, if any, then looks in known
+// installation locations on Unix systems, and finally looks in
+// $GOROOT/lib/time/zoneinfo.zip.
+func timeIn(location string) (time.Time, error) {
+	loc, err := time.LoadLocation(location)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return time.Now().In(loc), nil
 }
