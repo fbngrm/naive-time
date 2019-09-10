@@ -19,5 +19,13 @@ type period struct {
 type banner struct {
 	id      int64
 	content string
-	display display
+	period  period
+}
+
+// activeIn checks if a banner is currently active in the given location.
+// The check is performed by considering the
+func (b banner) activeIn(location string) (bool, error) {
+	// get time in location
+	// t,err:=timeIn(location)
+	return false, nil
 }
