@@ -46,15 +46,17 @@ var naiveTests = []struct {
 
 func TestNaiveTime(t *testing.T) {
 	for _, tt := range naiveTests {
+		ti := time.Unix(tt.ts, 0).UTC()
 		loc, err := time.LoadLocation(tt.loc)
 		if err != nil {
-			if err.Error() == tt.err { // expected error
-				continue
+			if err.Error() != tt.err {
+				t.Fatalf("error loading location %s: %v", tt.loc, err)
 			}
-			t.Fatalf("error loading location %s: %v", tt.loc, err)
+		} else {
+			// only parse the location when we don't expect an invalid location
+			ti = ti.In(loc)
 		}
-		ti := time.Unix(tt.ts, 0).UTC()
-		nt, err := naiveTime(ti.In(loc), tt.loc)
+		nt, err := naiveTime(ti, tt.loc)
 		if err != nil && err.Error() != tt.err {
 			t.Fatalf("error %s: %v", tt.loc, err)
 		}
