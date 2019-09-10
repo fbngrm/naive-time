@@ -3,6 +3,7 @@ package banner
 import (
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/fgrimme/0ca17a7468266cd599c376f2c522790404ed878f/display"
 )
@@ -53,7 +54,7 @@ func (s *store) ActiveIn(location string) (banner, error) {
 	var active bool
 	var err error
 	for _, b := range s.banners {
-		active, err = b.activeIn(location)
+		active, err = b.activeIn(time.Now(), location)
 		if active {
 			return b, nil
 		}

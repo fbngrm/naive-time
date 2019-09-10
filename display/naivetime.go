@@ -9,9 +9,9 @@ type naivetime struct {
 
 // naiveTime normalizes the time at the given location by removing the UTC-offset.
 // Returns an Unix epoch timestamp representation of the normalized time.
-func naiveTime(location string) (naivetime, error) {
+func naiveTime(t time.Time, location string) (naivetime, error) {
 	// local wall clock time in the provided location (UTC-offset aware).
-	t, err := timeIn(location)
+	t, err := timeIn(t, location)
 	if err != nil {
 		return naivetime{}, err
 	}
@@ -29,10 +29,10 @@ func naiveTime(location string) (naivetime, error) {
 // file named by the ZONEINFO environment variable, if any, then looks in known
 // installation locations on Unix systems, and finally looks in
 // $GOROOT/lib/time/zoneinfo.zip.
-func timeIn(location string) (time.Time, error) {
+func timeIn(t time.Time, location string) (time.Time, error) {
 	loc, err := time.LoadLocation(location)
 	if err != nil {
 		return time.Time{}, err
 	}
-	return time.Now().In(loc), nil
+	return t.In(loc), nil
 }

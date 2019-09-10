@@ -20,8 +20,8 @@ type Period struct {
 }
 
 // active checks if the naive time in location is an instant in period.
-func (p Period) Active(location string) (bool, error) {
-	n, err := naiveTime(location)
+func (p Period) Active(t time.Time, location string) (bool, error) {
+	n, err := naiveTime(t, location)
 	if err != nil {
 		return false, err
 	}
