@@ -12,3 +12,12 @@ type period struct {
 	begin    int64 // seconds since unix epoch
 	duration int64 // seconds banner should be displayed
 }
+
+// active checks if the naive time in location is an instant in period.
+func (p period) active(location string) (bool, error) {
+	n, err := naiveTime(location)
+	if err != nil {
+		return false, err
+	}
+	return n.timestamp >= p.begin && n.timestamp < p.begin+p.duration, nil
+}
