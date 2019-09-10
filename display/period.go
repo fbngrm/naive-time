@@ -1,6 +1,12 @@
 package display
 
-// period is the display period for a banner.
+import (
+	"fmt"
+	"time"
+)
+
+// period is an UTC-offset aware period in time. It is used as the display
+// period for a banner.
 // begin represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z.
 // Values must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive
 // to be parsable in a RFC3339 compliant layout.
@@ -20,4 +26,12 @@ func (p Period) Active(location string) (bool, error) {
 		return false, err
 	}
 	return n.timestamp >= p.begin && n.timestamp < p.begin+p.duration, nil
+}
+
+// String returns a human readable representation of the period.
+func (p Period) String() string {
+	begin := fmt.Sprintf("begin: %v", p.begin)
+	duration := fmt.Sprintf("duration: %d seconds", p.duration)
+	expire := fmt.Sprintf("expire: %v\n", time.Unix(p.begin+p.duration, 0).UTC())
+	return fmt.Sprintf("%s\n%s\n%s\n", begin, duration, expire)
 }
