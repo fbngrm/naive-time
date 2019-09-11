@@ -77,3 +77,36 @@ func (s *store) ActiveIn(t time.Time, location string) ([]banner, error) {
 	}
 	return banners, nil
 }
+
+// Create creates a banner for the given period.
+func (s *store) Create(content string, begin time.Time, duration int64) (banner, error) {
+	p, err := display.New(begin, duration)
+	if err != nil {
+		return banner{}, err
+	}
+	b := banner{
+		content: content,
+		period:  p,
+	}
+	// perform database operations to persist banner an retrieve auto-incremented id
+	//	b.id=id
+	return b, nil
+}
+
+// Create creates a banner for the given period.
+func (s *store) Create(content string, begin time.Time, duration int64) (banner, error) {
+	// mocked out but since no data layer is implemented
+	return banner{}, nil
+}
+
+// Update updates a banner.
+func (s *store) Update(id, duration int64, content string, begin time.Time) (banner, error) {
+	// mocked out but since no data layer is implemented
+	return banner{}, nil
+}
+
+// Delete deletes a banner.
+func (s *store) Delete(id int64) (bool, error) {
+	// mocked out but since no data layer is implemented
+	return false, nil
+}
