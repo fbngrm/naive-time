@@ -2,7 +2,7 @@ package display
 
 import "time"
 
-// naivetime represents an UTC-offset naive time.
+// naivetime is a timestamp representation of an UTC-offset naive time(offset removed).
 type naivetime struct {
 	timestamp int64
 }

@@ -13,6 +13,7 @@ import (
 // in the IANA database rules. Therefor, when creating a period, it is not
 // recommended to convert a time with an UTC-offset other than `00:00` to a
 // timestamp.
+// TODO: use time.Duration and time.Location types
 type Period struct {
 	begin    naivetime // seconds since unix epoch
 	duration int64     // seconds banner should be displayed
