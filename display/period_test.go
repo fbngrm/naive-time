@@ -232,7 +232,7 @@ func TestActive(t *testing.T) {
 			}
 		}
 		// test
-		active, err := tt.p.Active(ti, tt.l)
+		active, err := tt.p.Active(ti, tt.l, false)
 		if err != nil && err.Error() != tt.want.e.Error() {
 			t.Fatalf("case %s: %v", tt.d, err)
 		}

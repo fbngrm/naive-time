@@ -16,7 +16,7 @@ type banner struct {
 }
 
 // activeIn checks if a banner is active in the given location at a given time.
-func (b banner) activeIn(t time.Time, location string) (bool, error) {
+func (b banner) activeIn(t time.Time, location string, internal bool) (bool, error) {
 	// check UTC-offset naive time in location against the display period.
-	return b.period.Active(t, location)
+	return b.period.Active(t, location, internal)
 }

@@ -30,7 +30,7 @@ func NewStore(db *sql.DB) (*store, error) {
 // mocked since not part of the coding challenge.
 // FIXME:
 // - perform database operations to lookup banners
-// - sort banners ascendingly by display time
+// - sort banners ascendingly by begin of display period
 func load(s *store) error {
 	t, err := time.Parse(time.RFC3339, "2019-11-25T02:01:00Z")
 	if err != nil {
@@ -61,13 +61,14 @@ func load(s *store) error {
 	return nil
 }
 
-// ActiveIn returns a slice of  banners which are active in the location.
-func (s *store) ActiveIn(t time.Time, location string) ([]banner, error) {
+// ActiveIn returns a slice of banners which are active in the location.
+// Sorted by the earliest starting display period.
+func (s *store) ActiveIn(t time.Time, location string, internal bool) ([]banner, error) {
 	var active bool
 	var err error
 	banners := make([]banner, 0)
 	for _, b := range s.banners {
-		active, err = b.activeIn(t, location)
+		active, err = b.activeIn(t, location, internal)
 		if err != nil {
 			return nil, err
 		}
@@ -75,8 +76,15 @@ func (s *store) ActiveIn(t time.Time, location string) ([]banner, error) {
 			banners = append(banners, b)
 		}
 	}
+	if internal {
+		// sort by epiration time for internal requests
+		return s.sortByExpiration(banners), nil
+	}
 	return banners, nil
 }
+
+// FIXME: not implemented due to time restriction
+func (s *store) sortByExpiration(b []banner) []banner { return b }
 
 // Create creates a banner for the given period and stores it in the database.
 // Returns the banner if successful.

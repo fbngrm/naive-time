@@ -35,11 +35,14 @@ func New(t time.Time, duration int64) (Period, error) {
 
 // active checks if the naive representation of the given time in location
 // is an instant in period; if the Period is active in this location.
-func (p Period) Active(t time.Time, location string) (bool, error) {
+// If internal is true, it is checked ensured that Period is not expired only,
+// begin is omitted.
+func (p Period) Active(t time.Time, location string, internal bool) (bool, error) {
 	n, err := naiveTime(t, location)
 	if err != nil {
 		return false, err
 	}
-	return n.timestamp >= p.begin.timestamp &&
-		n.timestamp < p.begin.timestamp+p.duration, nil
+	started := n.timestamp >= p.begin.timestamp
+	expired := n.timestamp >= p.begin.timestamp+p.duration
+	return (started || internal) && !expired, nil
 }

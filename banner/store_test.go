@@ -87,7 +87,7 @@ func TestActiveIn(t *testing.T) {
 		t.Fatalf("error loading store: %v", err)
 	}
 	for _, tt := range testActiveIn {
-		banners, err := store.ActiveIn(time.Unix(tt.t, 0), tt.l)
+		banners, err := store.ActiveIn(time.Unix(tt.t, 0), tt.l, false)
 		if err != nil && err.Error() != tt.e.Error() {
 			t.Fatalf("%s: %v", tt.d, err)
 		}
