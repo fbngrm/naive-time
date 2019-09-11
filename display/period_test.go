@@ -1,6 +1,7 @@
 package display
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -51,7 +52,6 @@ var testPeriod = []struct {
 			location: "Pacific/Midway",
 		},
 	},
-	// TODO: test invalid time, location and duration
 }
 
 func TestNew(t *testing.T) {
@@ -59,14 +59,17 @@ func TestNew(t *testing.T) {
 		// parse the test date
 		loc, err := time.LoadLocation(tt.want.location)
 		if err != nil {
-			t.Fatalf("error loading location %s: %v", tt.want.location, err)
+			t.Fatalf("error %s: %v", tt.want.location, err)
 		}
 		ti, err := time.ParseInLocation(time.RFC3339, tt.t, loc)
 		if err != nil {
-			t.Fatalf("error parsing date %s: %v", tt.t, err)
+			if err.Error() != tt.e.Error() {
+				t.Fatalf("error %s: %v", tt.t, err)
+			}
+			ti = time.Time{}
 		}
-		p, err := New(ti, tt.want.duration)
 		// test
+		p, err := New(ti, tt.want.duration)
 		if err != nil && err.Error() != tt.e.Error() {
 			t.Fatalf("error %s: %v", tt.want.location, err)
 		}
@@ -198,17 +201,17 @@ var testActive = []struct {
 			e: nil,
 		},
 	},
-	{
-		d: "expired in Pacific/Midway",
-		t: "2005-05-02T15:01:00-11:00", // expired by one second
-		l: "Pacific/Midway",
+	{ // expect error
+		d: "invalid location",
+		t: "2005-05-02T15:01:00-11:00",
+		l: "invalid/location", // expect error
 		p: Period{
-			begin:    naivetime{timestamp: 1112454060}, // 2005-04-02 15:01:00 +0000 UTC
-			duration: 30 * 24 * 60 * 60,                // display period 30d
+			begin:    naivetime{timestamp: 0}, // 1970-01-01 0:00:00 +0000 UTC
+			duration: 30 * 24 * 60 * 60,       // display period 30d
 		},
 		want: active{
 			b: false,
-			e: nil,
+			e: errors.New("unknown time zone invalid/location"),
 		},
 	},
 }
@@ -216,13 +219,17 @@ var testActive = []struct {
 func TestActive(t *testing.T) {
 	for _, tt := range testActive {
 		// parse the test date
+		ti := time.Time{}
 		loc, err := time.LoadLocation(tt.l)
 		if err != nil {
-			t.Fatalf("error loading location %s: %v", tt.l, err)
-		}
-		ti, err := time.ParseInLocation(time.RFC3339, tt.t, loc)
-		if err != nil {
-			t.Fatalf("error parsing date %s: %v", tt.t, err)
+			if err.Error() != tt.want.e.Error() { // unexpected error
+				t.Fatalf("%s: %v", tt.d, err)
+			}
+		} else {
+			ti, err = time.ParseInLocation(time.RFC3339, tt.t, loc)
+			if err != nil {
+				t.Fatalf("error parsing date %s: %v", tt.t, err)
+			}
 		}
 		// test
 		active, err := tt.p.Active(ti, tt.l)
