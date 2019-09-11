@@ -28,9 +28,9 @@ func NewStore(db *sql.DB) (*store, error) {
 
 // load initializes a store by loading banners from the database.
 // mocked since not part of the coding challenge.
-// TODO:
-// perform database operations to lookup banners
-// sort banners ascendingly by display time
+// FIXME:
+// - perform database operations to lookup banners
+// - sort banners ascendingly by display time
 func load(s *store) error {
 	t, err := time.Parse(time.RFC3339, "2019-11-25T02:01:00Z")
 	if err != nil {
@@ -40,21 +40,21 @@ func load(s *store) error {
 	p1, err := display.New(t, 12*60*60)
 	b1 := banner{
 		id:      1,
-		content: "FOO BANNER",
+		content: "FOO BANNER 1",
 		period:  p1,
 	}
 	// 12h offset to the expiration of first banner; duration 48h
 	p2, err := display.New(t.Add(24*time.Hour), 48*60*60)
 	b2 := banner{
 		id:      2,
-		content: "FOO BANNER",
+		content: "FOO BANNER 2",
 		period:  p2,
 	}
 	// 1 day overlap with the second banner; duration 48h
 	p3, err := display.New(t.Add(48*time.Hour), 48*60*60)
 	b3 := banner{
 		id:      3,
-		content: "FOO BANNER",
+		content: "FOO BANNER 3",
 		period:  p3,
 	}
 	s.banners = []banner{b1, b2, b3}
@@ -78,13 +78,14 @@ func (s *store) ActiveIn(t time.Time, location string) ([]banner, error) {
 	return banners, nil
 }
 
-// Create creates a banner for the given period.
+// Create creates a banner for the given period and stores it in the database.
+// Returns the banner if successful.
 func (s *store) Create(content string, begin time.Time, duration int64) (banner, error) {
 	// mocked out but since no data layer is implemented
 	return banner{}, nil
 }
 
-// Update updates a banner.
+// Update updates a banner in the database and returns an updated version.
 func (s *store) Update(id, duration int64, content string, begin time.Time) (banner, error) {
 	// mocked out but since no data layer is implemented
 	return banner{}, nil
