@@ -4,7 +4,8 @@ The program implements the desired functionality with the following exceptions:
  - sorting by expiration date for internal requests
   - testing of internal requests
 
-
+### Belated submission
+NOTE: I made a belated submission to fix a bug in the import path. All other commits have been in time. Please check the commit history for merging in `fix-import` PR.
 
 ## General assumptions
 
