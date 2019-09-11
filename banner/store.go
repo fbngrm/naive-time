@@ -2,7 +2,6 @@ package banner
 
 import (
 	"database/sql"
-	"errors"
 	"time"
 
 	"github.com/fgrimme/0ca17a7468266cd599c376f2c522790404ed878f/display"
@@ -28,39 +27,53 @@ func NewStore(db *sql.DB) (*store, error) {
 }
 
 // load initializes a store by loading banners from the database.
-// TODO: implement - mocked since this is not part of the coding challenge.
+// mocked since not part of the coding challenge.
+// TODO:
+// perform database operations to lookup banners
+// sort banners ascendingly by display time
 func load(s *store) error {
-	// perform database operations to lookup banners
-	// sort banners ascendingly by display time
-	// assign banners to store
-	// ...
-	p := []display.Period{
-		display.Period{},
+	t, err := time.Parse(time.RFC3339, "2019-11-25T02:01:00Z")
+	if err != nil {
+		return err
 	}
-	b := []banner{
-		banner{
-			id:      1,
-			content: "FOO BANNER",
-			period:  p[0],
-		},
+	// first banner; duration 12h
+	p1, err := display.New(t, 12*60*60)
+	b1 := banner{
+		id:      1,
+		content: "FOO BANNER",
+		period:  p1,
 	}
-	s.banners = b
+	// 12h offset to the expiration of first banner; duration 48h
+	p2, err := display.New(t.Add(24*time.Hour), 48*60*60)
+	b2 := banner{
+		id:      2,
+		content: "FOO BANNER",
+		period:  p2,
+	}
+	// 1 day overlap with the second banner; duration 48h
+	p3, err := display.New(t.Add(48*time.Hour), 48*60*60)
+	b3 := banner{
+		id:      3,
+		content: "FOO BANNER",
+		period:  p3,
+	}
+	s.banners = []banner{b1, b2, b3}
 	return nil
 }
 
-// ActiveIn returns the first banner which is active in the location.
-// Returns an error if no banner is found.
-func (s *store) ActiveIn(location string) (banner, error) {
+// ActiveIn returns a slice of  banners which are active in the location.
+func (s *store) ActiveIn(t time.Time, location string) ([]banner, error) {
 	var active bool
 	var err error
+	banners := make([]banner, 0)
 	for _, b := range s.banners {
-		active, err = b.activeIn(time.Now(), location)
-		if active {
-			return b, nil
-		}
+		active, err = b.activeIn(t, location)
 		if err != nil {
-			return banner{}, err
+			return nil, err
+		}
+		if active {
+			banners = append(banners, b)
 		}
 	}
-	return banner{}, errors.New("no active banner in this location")
+	return banners, nil
 }
