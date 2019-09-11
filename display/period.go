@@ -5,14 +5,12 @@ import (
 )
 
 // period is an UTC-offset aware period in time. It is used as the display
-// period for a banner.
-// begin represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z.
+// period for a banner. begin represents seconds of UTC time since
+// Unix epoch 1970-01-01T00:00:00Z. To prepare for potential future changes in
+// the IANA database rules, it is instantiated with offset naive time and the
+// corresponding timezone name.
 // Values must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive
 // to be parsable in a RFC3339 compliant layout.
-// NOTE: This program does not provide a mechanism to deal with future changes
-// in the IANA database rules. Therefor, when creating a period, it is not
-// recommended to convert a time with an UTC-offset other than `00:00` to a
-// timestamp.
 // TODO: use time.Duration and time.Location types
 type Period struct {
 	begin    naivetime // seconds since unix epoch
@@ -20,6 +18,7 @@ type Period struct {
 	location string    // IANA location ID
 }
 
+// New returns a Period instantiated with the given time.
 func New(t time.Time, duration int64) (Period, error) {
 	loc := t.Location().String()
 	nt, err := naiveTime(t, loc)
@@ -35,7 +34,7 @@ func New(t time.Time, duration int64) (Period, error) {
 
 // active checks if the naive representation of the given time in location
 // is an instant in period; if the Period is active in this location.
-// If internal is true, it is checked ensured that Period is not expired only,
+// If internal is true, it is ensured only that Period is not expired,
 // begin is omitted.
 func (p Period) Active(t time.Time, location string, internal bool) (bool, error) {
 	n, err := naiveTime(t, location)

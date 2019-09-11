@@ -8,7 +8,7 @@ import (
 )
 
 // store handles database operations on banners and holds an in-memory
-// cache of banners. The cache is sorted ascendingly by display period.
+// cache of banners. The cache is sorted.
 type store struct {
 	db      *sql.DB
 	banners []banner // sorted
@@ -16,8 +16,6 @@ type store struct {
 
 // NewStore returns a store.
 // This is the only type to be used in depending modules.
-// TODO: the db parameter would either be an interface or a more flexible
-// custom type to manage datastore access.
 func NewStore(db *sql.DB) (*store, error) {
 	s := &store{db: db}
 	if err := load(s); err != nil {
