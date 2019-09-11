@@ -5,10 +5,10 @@ import (
 	"time"
 )
 
-var periodTests = []struct {
+var testPeriod = []struct {
 	t    string // UTC-offset aware time
 	d    int64  // duration in seconds
-	err  string // expected error message
+	e    error  // expected error
 	want Period
 }{
 	{
@@ -55,7 +55,7 @@ var periodTests = []struct {
 }
 
 func TestNew(t *testing.T) {
-	for _, tt := range periodTests {
+	for _, tt := range testPeriod {
 		loc, err := time.LoadLocation(tt.want.location)
 		if err != nil {
 			t.Fatalf("error loading location %s: %v", tt.want.location, err)
@@ -65,11 +65,17 @@ func TestNew(t *testing.T) {
 			t.Fatalf("error parsing date %s: %v", tt.t, err)
 		}
 		p, err := New(ti, tt.want.duration)
-		if err != nil && err.Error() != tt.err {
+		if err != nil && err.Error() != tt.err.Error() {
 			t.Fatalf("error %s: %v", tt.want.location, err)
 		}
 		if tt.want.begin != p.begin {
-			t.Errorf("%s: want %d have %d", tt.want.location, tt.want.begin, p.begin)
+			t.Errorf("%s begin: want %d have %d", tt.want.location, tt.want.begin, p.begin)
+		}
+		if tt.want.duration != p.duration {
+			t.Errorf("%s duration: want %d have %d", tt.want.location, tt.want.duration, p.duration)
+		}
+		if tt.want.location != p.location {
+			t.Errorf("%s location: want %s have %s", tt.want.location, tt.want.location, p.location)
 		}
 	}
 }
