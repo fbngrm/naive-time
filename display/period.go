@@ -32,7 +32,8 @@ func New(t time.Time, duration int64) (Period, error) {
 	}, nil
 }
 
-// active checks if the naive time in location is an instant in period.
+// active checks if the naive representation of the given time in location
+// is an instant in period; if the Period is active in this location.
 func (p Period) Active(t time.Time, location string) (bool, error) {
 	n, err := naiveTime(t, location)
 	if err != nil {
@@ -41,11 +42,3 @@ func (p Period) Active(t time.Time, location string) (bool, error) {
 	return n.timestamp >= p.begin.timestamp &&
 		n.timestamp < p.begin.timestamp+p.duration, nil
 }
-
-// // String returns a human readable representation of the period.
-// func (p Period) String() string {
-// 	begin := fmt.Sprintf("begin: %v", p.begin)
-// 	duration := fmt.Sprintf("duration: %d seconds", p.duration)
-// 	expire := fmt.Sprintf("expire: %v\n", time.Unix(p.begin.timestamp+p.duration, 0))
-// 	return fmt.Sprintf("%s\n%s\n%s\n", begin, duration, expire)
-// }
