@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/fgrimme/0ca17a7468266cd599c376f2c522790404ed878f/banner"
+	"github.com/m-rec/0ca17a7468266cd599c376f2c522790404ed878f/banner"
 )
 
 func main() {
