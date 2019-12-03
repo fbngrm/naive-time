@@ -3,21 +3,31 @@ package display
 import "time"
 
 // naivetime is a timestamp representation of an UTC-offset naive time(offset removed).
+// The offset is instead represented as the corresponding timezone name and is
+// stored along with the timestamp. The offset is removed to prepare for potential
+// future changes in the IANA database rules.
+// Values must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive
+// to be parsable in a RFC3339 compliant layout.
 type naivetime struct {
 	timestamp int64
+	zone      string // IANA location ID
 }
 
 // naiveTime normalizes the time at the given location by removing the UTC-offset.
-// Returns an Unix epoch timestamp representation of the normalized time.
-func naiveTime(t time.Time, location string) (naivetime, error) {
+// Returns an unix epoch timestamp representation of the normalized time and the
+// timezone name.
+func naiveTime(t time.Time, location string) (*naivetime, error) {
 	// local wall clock time in the provided location (UTC-offset aware).
 	t, err := timeIn(t, location)
 	if err != nil {
-		return naivetime{}, err
+		return nil, err
 	}
 	// remove zone-offset
-	_, offset := t.Zone()
-	return naivetime{timestamp: t.Unix() + int64(offset)}, nil
+	zone, offset := t.Zone()
+	return &naivetime{
+		timestamp: t.Unix() + int64(offset),
+		zone:      zone,
+	}, nil
 }
 
 // timeIn loads the time in the provided location. If the provided location name
