@@ -26,7 +26,6 @@ Offset-aware Time
 
  - Does have an UTC-offset.
 
-
 Offset-naive Time
 
  - Does *not* have an UTC-offset.
