@@ -15,40 +15,40 @@ var testPeriod = []struct {
 	{
 		t: "2005-04-03T02:01:00Z",
 		want: Period{
-			begin:    naivetime{timestamp: 1112493660}, // 2005-04-03 02:01:00 +00:00 UTC
-			duration: 60 * 60,                          // display period 1h
+			begin:    &naivetime{timestamp: 1112493660}, // 2005-04-03 02:01:00 +00:00 UTC
+			duration: 60 * 60,                           // display period 1h
 			location: "UTC",
 		},
 	},
 	{
 		t: "2005-04-03T11:01:00+09:00",
 		want: Period{
-			begin:    naivetime{timestamp: 1112526060}, // 2005-04-03 11:01:00 +0000 UTC
-			duration: 12 * 60 * 60,                     // display period 12h
+			begin:    &naivetime{timestamp: 1112526060}, // 2005-04-03 11:01:00 +0000 UTC
+			duration: 12 * 60 * 60,                      // display period 12h
 			location: "Asia/Tokyo",
 		},
 	},
 	{
 		t: "2005-04-03T04:01:00+02:00",
 		want: Period{
-			begin:    naivetime{timestamp: 1112500860}, // 2005-04-03 04:01:00 +0000 UTC
-			duration: 24 * 60 * 60,                     // display period 24h
+			begin:    &naivetime{timestamp: 1112500860}, // 2005-04-03 04:01:00 +0000 UTC
+			duration: 24 * 60 * 60,                      // display period 24h
 			location: "Europe/Berlin",
 		},
 	},
 	{
 		t: "2005-04-02T18:01:00-08:00",
 		want: Period{
-			begin:    naivetime{timestamp: 1112464860}, // 2005-04-02 18:01:00 +0000 UTC
-			duration: 60,                               // display period 1m
+			begin:    &naivetime{timestamp: 1112464860}, // 2005-04-02 18:01:00 +0000 UTC
+			duration: 60,                                // display period 1m
 			location: "America/Los_Angeles",
 		},
 	},
 	{
 		t: "2005-04-02T15:01:00-11:00",
 		want: Period{
-			begin:    naivetime{timestamp: 1112454060}, // 2005-04-02 15:01:00 +0000 UTC
-			duration: 48 * 60 * 60,                     // display period 48h
+			begin:    &naivetime{timestamp: 1112454060}, // 2005-04-02 15:01:00 +0000 UTC
+			duration: 48 * 60 * 60,                      // display period 48h
 			location: "Pacific/Midway",
 		},
 	},
@@ -102,8 +102,8 @@ var testActive = []struct {
 		t: "2005-04-03T02:00:59Z", // one second before begin
 		l: "UTC",
 		p: Period{
-			begin:    naivetime{timestamp: 1112493660}, // 2005-04-03 02:01:00 +00:00 UTC
-			duration: 60 * 60,                          // display period 1h
+			begin:    &naivetime{timestamp: 1112493660}, // 2005-04-03 02:01:00 +00:00 UTC
+			duration: 60 * 60,                           // display period 1h
 		},
 		want: active{
 			b: false,
@@ -115,8 +115,8 @@ var testActive = []struct {
 		t: "2005-04-03T02:01:00Z", // first second of display period
 		l: "UTC",
 		p: Period{
-			begin:    naivetime{timestamp: 1112493660}, // 2005-04-03 02:01:00 +00:00 UTC
-			duration: 60 * 60,                          // display period 1h
+			begin:    &naivetime{timestamp: 1112493660}, // 2005-04-03 02:01:00 +00:00 UTC
+			duration: 60 * 60,                           // display period 1h
 		},
 		want: active{
 			b: true,
@@ -128,8 +128,8 @@ var testActive = []struct {
 		t: "2005-04-03T03:01:00Z", // expired by one second
 		l: "UTC",
 		p: Period{
-			begin:    naivetime{timestamp: 1112493660}, // 2005-04-03 02:01:00 +00:00 UTC
-			duration: 60 * 60,                          // display period 1h
+			begin:    &naivetime{timestamp: 1112493660}, // 2005-04-03 02:01:00 +00:00 UTC
+			duration: 60 * 60,                           // display period 1h
 		},
 		want: active{
 			b: false,
@@ -141,8 +141,8 @@ var testActive = []struct {
 		t: "2005-04-02T13:01:00+09:00", // 12h before display period
 		l: "Asia/Tokyo",
 		p: Period{
-			begin:    naivetime{timestamp: 1112526060}, // 2005-04-03 11:01:00 +0000 UTC
-			duration: 48 * 60 * 60,                     // display period 48h
+			begin:    &naivetime{timestamp: 1112526060}, // 2005-04-03 11:01:00 +0000 UTC
+			duration: 48 * 60 * 60,                      // display period 48h
 		},
 		want: active{
 			b: false,
@@ -154,8 +154,8 @@ var testActive = []struct {
 		t: "2005-04-04T11:01:00+09:00", // 24h after begin of display period
 		l: "Asia/Tokyo",
 		p: Period{
-			begin:    naivetime{timestamp: 1112526060}, // 2005-04-03 11:01:00 +0000 UTC
-			duration: 48 * 60 * 60,                     // display period 48h
+			begin:    &naivetime{timestamp: 1112526060}, // 2005-04-03 11:01:00 +0000 UTC
+			duration: 48 * 60 * 60,                      // display period 48h
 		},
 		want: active{
 			b: true,
@@ -167,8 +167,8 @@ var testActive = []struct {
 		t: "2005-05-03T11:01:00+09:00", // expired by one month
 		l: "Asia/Tokyo",
 		p: Period{
-			begin:    naivetime{timestamp: 1112526060}, // 2005-04-03 11:01:00 +0000 UTC
-			duration: 48 * 60 * 60,                     // display period 48h
+			begin:    &naivetime{timestamp: 1112526060}, // 2005-04-03 11:01:00 +0000 UTC
+			duration: 48 * 60 * 60,                      // display period 48h
 		},
 		want: active{
 			b: false,
@@ -180,8 +180,8 @@ var testActive = []struct {
 		t: "2004-04-02T15:01:00-11:00", // 1 year before display period
 		l: "Pacific/Midway",
 		p: Period{
-			begin:    naivetime{timestamp: 1112454060}, // 2005-04-02 15:01:00 +0000 UTC
-			duration: 30 * 24 * 60 * 60,                // display period 30d
+			begin:    &naivetime{timestamp: 1112454060}, // 2005-04-02 15:01:00 +0000 UTC
+			duration: 30 * 24 * 60 * 60,                 // display period 30d
 		},
 		want: active{
 			b: false,
@@ -193,8 +193,8 @@ var testActive = []struct {
 		t: "2005-05-02T15:00:59-11:00", // last second of display period
 		l: "Pacific/Midway",
 		p: Period{
-			begin:    naivetime{timestamp: 1112454060}, // 2005-04-02 15:01:00 +0000 UTC
-			duration: 30 * 24 * 60 * 60,                // display period 30d
+			begin:    &naivetime{timestamp: 1112454060}, // 2005-04-02 15:01:00 +0000 UTC
+			duration: 30 * 24 * 60 * 60,                 // display period 30d
 		},
 		want: active{
 			b: true,
@@ -206,8 +206,8 @@ var testActive = []struct {
 		t: "2005-05-02T15:01:00-11:00",
 		l: "invalid/location", // expect error
 		p: Period{
-			begin:    naivetime{timestamp: 0}, // 1970-01-01 0:00:00 +0000 UTC
-			duration: 30 * 24 * 60 * 60,       // display period 30d
+			begin:    &naivetime{timestamp: 0}, // 1970-01-01 0:00:00 +0000 UTC
+			duration: 30 * 24 * 60 * 60,        // display period 30d
 		},
 		want: active{
 			b: false,
